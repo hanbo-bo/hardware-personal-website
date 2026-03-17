@@ -5,6 +5,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ["65575t-5173.csb.app"],
+    allowedHosts: [
+      "65575t-5173.csb.app",
+      "65575t-5174.csb.app",
+      "65575t-5175.csb.app",
+    ],
   },
 });
