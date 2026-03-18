@@ -3,8 +3,11 @@
         "./src/**/*"
     ],
     "compilerOptions": {
+        "skipLibCheck": true,
         "strict": true,
         "esModuleInterop": true,
+        "noEmit": true,  // 告诉 TS 不要生成 .js 文件，只做类型检查
+        "allowJs": false, // 如果你全是 TSX，建议关掉这个
         "lib": [
             "dom",
             "es2015"

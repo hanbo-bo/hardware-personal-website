@@ -1,6 +1,6 @@
 import "./styles.css";
 import ShenbaiTrade from "./ShenbaiTrade";
-export default function App() {
+function App() {
   return (
     <div className="App">
       <ShenbaiTrade />
@@ -10,3 +10,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
