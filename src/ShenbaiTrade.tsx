@@ -13,6 +13,8 @@ import {
   Globe,
 } from "lucide-react";
 
+import ContactForm from "./component/ContactForm";
+
 // --- 类型定义 ---
 interface Product {
   id: string;
@@ -508,12 +510,13 @@ const ShenbaiTrade: React.FC = () => {
                   <option>其他非标定制件</option>
                 </select>
               </div>
-              <button
+              <ContactForm />
+              {/* <button
                 type="submit"
                 className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors mt-6 shadow-lg shadow-blue-600/30"
               >
                 立即提交需求
-              </button>
+              </button> */}
             </form>
           </div>
         </div>
