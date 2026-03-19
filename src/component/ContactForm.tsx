@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CheckCircle2, Loader2, Send, MessageSquare } from "lucide-react";
+import { CheckCircle2, Loader2, Send, MessageSquare, } from "lucide-react";
 
 // 1. 配置后端地址（确保是你 Ports 面板里的 HTTPS 链接）
 const BACKEND_URL = "https://vdyy23-3000.csb.app";
 
 const ContactForm = () => {
   const initialFormState = {
-    name: "",
-    phone: "",
+    name: "Miss Zhange",
+    phone: "18888888888",
     product: "干壁钉系列",
-    message: "", // 新增：留言字段
+    message: "Please contact me as soon as possible.", // 新增：留言字段
   };
   // 状态管理
   const [formData, setFormData] = useState(initialFormState);
@@ -92,6 +92,48 @@ const ContactForm = () => {
 
   return (
     <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100 mx-auto">
+      {/* 成功后的全覆盖倒计时提示层 */}
+{isSuccess && (
+  <div className="absolute inset-0 z-20 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+    {/* 成功图标动画 */}
+    <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 animate-bounce">
+      <CheckCircle2 size={48} />
+    </div>
+    
+    <h3 className="text-2xl font-bold text-slate-900 mb-2">提交成功！</h3>
+    <p className="text-slate-600 mb-6">
+      加急申请已推送至业务经理飞书<br />
+      请保持电话畅通，我们将在30分钟内联系您
+    </p>
+
+    {/* 倒计时进度圈或数字 */}
+    <div className="flex flex-col items-center">
+      <div className="relative w-12 h-12 flex items-center justify-center">
+        <svg className="w-full h-full transform -rotate-90">
+          <circle
+            cx="24" cy="24" r="20"
+            stroke="currentColor" strokeWidth="4" fill="transparent"
+            className="text-slate-100"
+          />
+          <circle
+            cx="24" cy="24" r="20"
+            stroke="currentColor" strokeWidth="4" fill="transparent"
+            strokeDasharray={126}
+            strokeDashoffset={126 - (126 * countdown) / 5}
+            className="text-green-500 transition-all duration-1000 ease-linear"
+          />
+        </svg>
+        <span className="absolute text-sm font-bold text-slate-700">{countdown}s</span>
+      </div>
+      <button 
+        onClick={() => { setCountdown(0); }} // 点击立即重置/关闭
+        className="mt-4 text-xs text-slate-400 hover:text-blue-600 underline"
+      >
+        继续浏览产品
+      </button>
+    </div>
+  </div>
+)}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 第一行：姓名与手机并排 (针对笔记本优化) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -154,13 +196,22 @@ const ContactForm = () => {
             </span>
           </div>
           <textarea
+      name="message"
+      rows={3}
+      disabled={isSubmitting || isSuccess}
+      value={formData.message}
+      onChange={handleChange}
+      placeholder="请填写具体规格、数量或其他特殊要求..."
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:bg-gray-50 resize-none text-sm"
+    />
+          {/* <textarea
             name="message"
             rows={2}
             value={formData.message}
             onChange={handleChange}
             placeholder="填写规格、数量等..."
             className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none"
-          />
+          /> */}
         </div>
 
         {/* 提交按钮 */}
@@ -195,7 +246,7 @@ const ContactForm = () => {
       </form>
 
       <p className="mt-4 text-xs text-gray-400 text-center">
-        您的信息将严格保密，仅用于提供报价服务
+      🛡️ 信息已加密处理 · 仅用于申佰贸易询价服务
       </p>
     </div>
   );
