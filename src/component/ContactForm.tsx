@@ -1,138 +1,302 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { CheckCircle2, Loader2, Send, MessageSquare } from "lucide-react";
+
+// 1. 配置后端地址（确保是你 Ports 面板里的 HTTPS 链接）
+const BACKEND_URL = "https://vdyy23-3000.csb.app";
 
 const ContactForm = () => {
-  // 1. 使用 useState 管理表单状态
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    product: '默认产品' // 假设你的下拉框默认值
-  });
-  
+  const initialFormState = {
+    name: "",
+    phone: "",
+    product: "干壁钉系列",
+    message: "", // 新增：留言字段
+  };
+  // 状态管理
+  const [formData, setFormData] = useState(initialFormState);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  const [countdown, setCountdown] = useState(0);
   // 处理输入框变化
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    // 限制留言字数在 200 字以内
+    if (name === "message" && value.length > 200) return;
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-
-  // 2. 提交处理函数
+  // 2. 提交处理函数 (使用 Axios)
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // 阻止表单默认刷新行为
+    e.preventDefault();
 
-    const { name, phone, product } = formData;
+    if (isSubmitting || isSuccess) return;
+
+    const { name, phone, product, message } = formData;
 
     // 验证逻辑
     if (!name.trim() || !phone.trim()) {
-      alert('请填写您的称呼和手机号码哦！');
+      alert("请填写姓名和手机号");
+      return;
+    }
+
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("请输入正确的11位手机号码");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // 3. 发送请求 (这里的 URL 需对应你的后端接口)
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, product })
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/api/submit-form`,
+        { name, phone, product, message }, // 将留言一并发送
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: 10000,
+        }
+      );
 
-      if (response.ok) {
+      if (response.data.success || response.status === 200) {
         setIsSuccess(true);
-        alert('提交成功！业务经理正在快马加鞭为您核算底价，请留意陌生来电。');
-        // 清空表单
-        setFormData({ name: '', phone: '', product: '默认产品' });
-      } else {
-        throw new Error('提交失败');
+        setCountdown(5); // 5秒后重置
       }
-    } catch (error) {
-      alert('网络好像开小差了，请稍后再试或直接拨打客服电话。');
-    } finally {
+    } catch (error: any) {
+      console.error("提交错误:", error);
+      alert(error.response?.data?.error || "提交失败，请检查网络后重试");
       setIsSubmitting(false);
     }
   };
 
+  // 倒计时逻辑：成功后自动重置表单
+  useEffect(() => {
+    let timer = +new Date();
+    if (isSuccess && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (isSuccess && countdown === 0) {
+      // 倒计时结束，重置状态
+      setIsSuccess(false);
+      setIsSubmitting(false);
+      setFormData(initialFormState);
+    }
+    return () => clearTimeout(timer);
+  }, [isSuccess, countdown]);
+
   return (
-    <form
-    className="space-y-5"
-    // onSubmit={(e) => {
-    //   e.preventDefault();
-    //   alert("提交成功，我们将尽快联系您！");
-    //   setIsModalOpen(false);
-    // }}
-onSubmit={handleSubmit} className="space-y-4"
- >
-    <div>
-      <label className="block text-sm font-bold text-slate-700 mb-2">
-        联系人姓名 *
-      </label>
-      <input
-        required
-        type="text"
-        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-        placeholder="请输入您的称呼"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-      />
-    
-    </div>
-    <div>
-      <label className="block text-sm font-bold text-slate-700 mb-2">
-        手机号码 *
-      </label>
-      <input
-        required
-        type="tel"
-        name="phone"
-        placeholder="请输入手机号"
-        value={formData.phone}
-        onChange={handleChange}
-        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-      />
-    </div>
-    <div>
-      <label className="block text-sm font-bold text-slate-700 mb-2">
-        需求产品及规格
-      </label>
-      <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-700"
-        name="product" 
-        value={formData.product} 
-        onChange={handleChange}
-      >
-        <option>干壁钉系列</option>
-        <option>钻尾丝系列</option>
-        <option>全螺纹螺柱</option>
-        <option>其他非标定制件</option>
-      </select>
-    </div>
-    {/* <button
-      type="submit"
-      className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors mt-6 shadow-lg shadow-blue-600/30"
-    >
-      立即提交需求
-    </button> */}
+    <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100 mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* 第一行：姓名与手机并排 (针对笔记本优化) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              联系人姓名 *
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="如：张先生"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              手机号码 *
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="请输入手机号"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm transition-all"
+            />
+          </div>
+        </div>
+
+        {/* 第二行：产品选择 */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">
+            需求产品
+          </label>
+          <select
+            name="product"
+            value={formData.product}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none text-sm cursor-pointer"
+          >
+            <option value="干壁钉系列">干壁钉系列</option>
+            <option value="自攻螺钉系列">自攻螺钉系列</option>
+            <option value="膨胀螺栓系列">膨胀螺栓系列</option>
+            <option value="其他大宗采购">其他大宗采购</option>
+          </select>
+        </div>
+
+        {/* 第三行：留言备注 */}
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-xs font-semibold text-gray-600 flex items-center">
+              <MessageSquare className="w-3 h-3 mr-1" /> 更多需求说明 (可选)
+            </label>
+            <span className="text-[10px] text-gray-400">
+              {formData.message.length}/200
+            </span>
+          </div>
+          <textarea
+            name="message"
+            rows={2}
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="填写规格、数量等..."
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none"
+          />
+        </div>
+
+        {/* 提交按钮 */}
         <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-all mt-6 shadow-lg 
-          ${isSuccess ? 'bg-green-600 shadow-green-600/30' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30'}
-          ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'opacity-100'}
-        `}
-      >
-        {isSubmitting ? '提交中...' : isSuccess ? '提交成功！' : '立即提交需求'}
-      </button>
-        {/* 姓名输入框 */}
-      {/* 手机号输入框 */}
-      {/* 产品选择 (示例) */}
-      {/* 提交按钮 */}
-  </form>
+          type="submit"
+          disabled={isSubmitting || isSuccess}
+          className={`w-full font-bold py-3 rounded-xl transition-all flex items-center justify-center shadow-lg
+            ${
+              isSuccess
+                ? "bg-green-500 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }
+            ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : "active:scale-95"
+            }
+          `}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin h-5 w-5 mr-2" /> 正在发送申请...
+            </>
+          ) : isSuccess ? (
+            <>
+              <CheckCircle2 className="h-5 w-5 mr-2" /> 提交成功 ({countdown}s)
+            </>
+          ) : (
+            <>
+              <Send className="h-4 w-4 mr-2" /> 立即获取底价报价
+            </>
+          )}
+        </button>
+      </form>
+
+      <p className="mt-4 text-xs text-gray-400 text-center">
+        您的信息将严格保密，仅用于提供报价服务
+      </p>
+    </div>
   );
 };
 
 export default ContactForm;
+
+{
+  /* <form onSubmit={handleSubmit} className="space-y-5">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      联系人姓名 *
+    </label>
+    <input
+      type="text"
+      name="name"
+      required
+      value={formData.name}
+      onChange={handleChange}
+      placeholder="如：张先生"
+      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      手机号码 *
+    </label>
+    <input
+      type="tel"
+      name="phone"
+      required
+      value={formData.phone}
+      onChange={handleChange}
+      placeholder="请输入11位手机号"
+      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      需求产品及规格
+    </label>
+    <select
+      name="product"
+      value={formData.product}
+      onChange={handleChange}
+      className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    >
+      <option value="干壁钉系列">干壁钉系列</option>
+      <option value="自攻螺钉系列">自攻螺钉系列</option>
+      <option value="膨胀螺栓系列">膨胀螺栓系列</option>
+      <option value="其他大宗采购">其他大宗采购</option>
+    </select>
+  </div>
+  <div>
+    <div className="flex justify-between items-center mb-1">
+      <label className="text-sm font-semibold text-gray-700 flex items-center">
+        <MessageSquare className="w-4 h-4 mr-1 text-gray-400" />
+        更多需求说明 (可选)
+      </label>
+      <span className="text-[10px] text-gray-400">
+        {formData.message.length}/200
+      </span>
+    </div>
+    <textarea
+      name="message"
+      rows={3}
+      disabled={isSubmitting || isSuccess}
+      value={formData.message}
+      onChange={handleChange}
+      placeholder="请填写具体规格、数量或其他特殊要求..."
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:bg-gray-50 resize-none text-sm"
+    />
+  </div>
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    className={`w-full font-bold py-3 rounded-md transition-all flex items-center justify-center space-x-2 text-white
+            ${isSuccess ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
+            ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+          `}
+  >
+    {isSubmitting ? (
+      <>
+        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+        <Loader2 className="animate-spin h-5 w-5 mr-2" />
+        <span>正在发送加急申请...</span>
+      </>
+    ) : isSuccess ? (
+      <>
+        <CheckCircle2 className="h-5 w-5 mr-2" />
+        <span>提交成功 ({countdown}s)</span>
+        <span>✅ 申请成功 ({countdown}s)</span>
+      </>
+    ) : (
+      <>
+        <Send className="h-4 w-4 mr-2" />
+        <span>立即提交申请</span>
+      </>
+    )}
+  </button>
+</form>; */
+}

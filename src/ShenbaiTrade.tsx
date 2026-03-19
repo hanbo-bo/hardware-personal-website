@@ -469,6 +469,9 @@ const ShenbaiTrade: React.FC = () => {
               </p>
             </div>
             <ContactForm />
+            <p className="mt-4 text-[10px] text-gray-400 text-center uppercase tracking-widest">
+              Secure & Confidential Service
+            </p>
           </div>
         </div>
       )}
