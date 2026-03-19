@@ -468,56 +468,7 @@ const ShenbaiTrade: React.FC = () => {
                 业务经理将在 30 分钟内与您联系，提供专属出厂底价
               </p>
             </div>
-
-            <form
-              className="space-y-5"
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert("提交成功，我们将尽快联系您！");
-                setIsModalOpen(false);
-              }}
-            >
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  联系人姓名 *
-                </label>
-                <input
-                  required
-                  type="text"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  placeholder="请输入您的称呼"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  手机号码 *
-                </label>
-                <input
-                  required
-                  type="tel"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  placeholder="请输入手机号"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  需求产品及规格
-                </label>
-                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-700">
-                  <option>干壁钉系列</option>
-                  <option>钻尾丝系列</option>
-                  <option>全螺纹螺柱</option>
-                  <option>其他非标定制件</option>
-                </select>
-              </div>
-              <ContactForm />
-              {/* <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors mt-6 shadow-lg shadow-blue-600/30"
-              >
-                立即提交需求
-              </button> */}
-            </form>
+            <ContactForm />
           </div>
         </div>
       )}

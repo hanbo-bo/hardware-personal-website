@@ -58,46 +58,66 @@ const ContactForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* 姓名输入框 */}
-      <div>
-        <input
-          type="text"
-          name="name"
-          placeholder="您的称呼"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-3 border rounded-lg"
-        />
-      </div>
-
-      {/* 手机号输入框 */}
-      <div>
-        <input
-          type="tel"
-          name="phone"
-          placeholder="手机号码"
-          value={formData.phone}
-          onChange={handleChange}
-          className="w-full p-3 border rounded-lg"
-        />
-      </div>
-
-      {/* 产品选择 (示例) */}
-      <div>
-        <select 
-          name="product" 
-          value={formData.product} 
-          onChange={handleChange}
-          className="w-full p-3 border rounded-lg"
-        >
-          <option value="产品A">产品A</option>
-          <option value="产品B">产品B</option>
-        </select>
-      </div>
-
-      {/* 提交按钮 */}
-      <button
+    <form
+    className="space-y-5"
+    // onSubmit={(e) => {
+    //   e.preventDefault();
+    //   alert("提交成功，我们将尽快联系您！");
+    //   setIsModalOpen(false);
+    // }}
+onSubmit={handleSubmit} className="space-y-4"
+ >
+    <div>
+      <label className="block text-sm font-bold text-slate-700 mb-2">
+        联系人姓名 *
+      </label>
+      <input
+        required
+        type="text"
+        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+        placeholder="请输入您的称呼"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+      />
+    
+    </div>
+    <div>
+      <label className="block text-sm font-bold text-slate-700 mb-2">
+        手机号码 *
+      </label>
+      <input
+        required
+        type="tel"
+        name="phone"
+        placeholder="请输入手机号"
+        value={formData.phone}
+        onChange={handleChange}
+        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-bold text-slate-700 mb-2">
+        需求产品及规格
+      </label>
+      <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-slate-700"
+        name="product" 
+        value={formData.product} 
+        onChange={handleChange}
+      >
+        <option>干壁钉系列</option>
+        <option>钻尾丝系列</option>
+        <option>全螺纹螺柱</option>
+        <option>其他非标定制件</option>
+      </select>
+    </div>
+    {/* <button
+      type="submit"
+      className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors mt-6 shadow-lg shadow-blue-600/30"
+    >
+      立即提交需求
+    </button> */}
+        <button
         type="submit"
         disabled={isSubmitting}
         className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-all mt-6 shadow-lg 
@@ -107,7 +127,11 @@ const ContactForm = () => {
       >
         {isSubmitting ? '提交中...' : isSuccess ? '提交成功！' : '立即提交需求'}
       </button>
-    </form>
+        {/* 姓名输入框 */}
+      {/* 手机号输入框 */}
+      {/* 产品选择 (示例) */}
+      {/* 提交按钮 */}
+  </form>
   );
 };
 
