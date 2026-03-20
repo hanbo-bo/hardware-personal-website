@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CheckCircle2, Loader2, Send, MessageSquare } from "lucide-react";
 
-// 1. 配置后端地址（确保是你 Ports 面板里的 HTTPS 链接）
-const BACKEND_URL = "https://43.106.102.92:3000"; //http://127.0.0.1:3000/api/submit-form
-// const BACKEND_URL = "https://global.shenbai.qzz.io";
-
 const ContactForm = () => {
   const initialFormState = {
     name: "Miss Zhange",
