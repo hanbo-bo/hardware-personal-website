@@ -3,7 +3,7 @@ import axios from "axios";
 import { CheckCircle2, Loader2, Send, MessageSquare } from "lucide-react";
 
 // 1. 配置后端地址（确保是你 Ports 面板里的 HTTPS 链接）
-const BACKEND_URL = "http://43.106.102.92:3000"; //http://127.0.0.1:3000/api/submit-form
+const BACKEND_URL = "https://43.106.102.92:3000"; //http://127.0.0.1:3000/api/submit-form
 // const BACKEND_URL = "https://global.shenbai.qzz.io";
 
 const ContactForm = () => {
@@ -58,7 +58,7 @@ const ContactForm = () => {
 
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/submit-form`,
+        `/api/submit-form`,
         { name, phone, product, message }, // 将留言一并发送
         {
           headers: { "Content-Type": "application/json" },
