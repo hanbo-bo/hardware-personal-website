@@ -4,10 +4,10 @@ import { CheckCircle2, Loader2, Send, MessageSquare } from "lucide-react";
 
 const ContactForm = () => {
   const initialFormState = {
-    name: "Miss Zhange",
-    phone: "18888888888",
+    name: "",
+    phone: "",
     product: "干壁钉系列",
-    message: "Please contact me as soon as possible.", // 新增：留言字段
+    message: "", // 新增：留言字段
   };
   // 状态管理
   const [formData, setFormData] = useState(initialFormState);
